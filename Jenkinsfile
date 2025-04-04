@@ -5,19 +5,25 @@ pipeline {
         AZURE_CLIENT_ID = credentials('AZURE_CLIENT_ID')
         AZURE_CLIENT_SECRET = credentials('AZURE_CLIENT_SECRET')
         AZURE_TENANT_ID = credentials('AZURE_TENANT_ID')
-        RESOURCE_GROUP = 'azure_pipeline'
+        RESOURCE_GROUP = 'MyResourceGroup'
         FUNCTION_APP_NAME = 'myfunctionapp8910481'
     }
     stages {
         stage('Build') {
             steps {
-                sh 'python -m venv .venv'
-                sh 'source .venv/bin/activate && pip install -r requirements.txt'
+                bat '''
+                    python -m venv .venv
+                    call .venv\\Scripts\\activate
+                    pip install -r requirements.txt
+                '''
             }
         }
         stage('Test') {
             steps {
-                sh 'source .venv/bin/activate && pytest tests/ -v'
+                bat '''
+                    call .venv\\Scripts\\activate
+                    pytest tests\\ -v
+                '''
             }
         }
         stage('Deploy') {
@@ -29,9 +35,9 @@ pipeline {
                     clientSecretVariable: 'AZURE_CLIENT_SECRET',
                     tenantIdVariable: 'AZURE_TENANT_ID'
                 )]) {
-                    sh '''
-                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                        func azure functionapp publish $FUNCTION_APP_NAME
+                    bat '''
+                        az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% -t %AZURE_TENANT_ID%
+                        func azure functionapp publish %FUNCTION_APP_NAME%
                     '''
                 }
             }

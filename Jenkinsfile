@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        AZURE_CLIENT_ID = Credentials('azure-client-id')
-        AZURE_CLIENT_SECRET = Credentials('azure-client-secret')
-        AZURE_TENANT_ID = Credentials('azure-tenant-id')
+        AZURE_CLIENT_ID = credentials('azure-client-id')
+        AZURE_CLIENT_SECRET = credentials('azure-client-secret')
+        AZURE_TENANT_ID = credentials('azure-tenant-id')
         RESOURCE_GROUP = 'azure_pipeline'
         FUNCTION_APP_NAME = 'myfunctionapp8910481'
     }

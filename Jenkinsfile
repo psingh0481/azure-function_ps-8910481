@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        AZURE_CLIENT_ID = credentials('azure-client-id')
-        AZURE_CLIENT_SECRET = credentials('azure-client-secret')
-        AZURE_TENANT_ID = credentials('azure-tenant-id')
+        AZURE_CLIENT_ID = credentials('azure-client-id')  // Credentials ID for Client ID
+        AZURE_CLIENT_SECRET = credentials('azure-client-secret')  // Credentials ID for Client Secret
+        AZURE_TENANT_ID = credentials('azure-tenant-id')  // Credentials ID for Tenant ID
         RESOURCE_GROUP = 'azure_pipeline'
         FUNCTION_APP_NAME = 'myfunctionapp8910481'
     }
@@ -17,7 +17,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'pytest tests/' // Add your test cases under the tests directory
+                sh 'pytest tests/'  // Add your test cases under the tests directory
             }
         }
         stage('Deploy') {

@@ -13,6 +13,11 @@ pipeline {
         AZURE_TENANT_ID = credentials('azure-tenant-id')
     }
 
+    triggers {
+        githubPush()
+    
+    } // This trigger will start the pipeline when a push is made to the GitHub repository.
+    
     stages {
         stage('Checkout') {
             steps {

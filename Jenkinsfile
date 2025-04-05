@@ -1,17 +1,16 @@
+// This Jenkinsfile is for a Python-based Azure Function App deployment pipeline.
+// It includes stages for checking out code, installing dependencies, running tests, building the package, and deploying to Azure.
 pipeline {
     agent any
 
     environment {
-        // Set Python and pip path explicitly (adjust based on your Python installation path)
-        PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311"
-        PIP_PATH = "pip 23.2.1 from C:/Users/singp/AppData/Local/Programs/Python/Python311/Lib/site-packages/pip"
-        PATH = "${PYTHON_PATH};${PIP_PATH};${env.PATH}"
+        PYTHON_PATH = "/usr/bin/python3"
+        PATH = "${env.PATH}:${PYTHON_PATH}"
         
-        // Azure Service Principal credentials (These should be stored in Jenkins as secrets)
-        AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id') // Replace with your Jenkins secret ID
-        AZURE_CLIENT_ID = credentials('azure-client-id') // Replace with your Jenkins secret ID
-        AZURE_CLIENT_SECRET = credentials('azure-client-secret') // Replace with your Jenkins secret ID
-        AZURE_TENANT_ID = credentials('azure-tenant-id') // Replace with your Jenkins secret ID
+        AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
+        AZURE_CLIENT_ID = credentials('azure-client-id')
+        AZURE_CLIENT_SECRET = credentials('azure-client-secret')
+        AZURE_TENANT_ID = credentials('azure-tenant-id')
     }
 
     stages {
@@ -25,38 +24,38 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                script {
-                    // Use full path to pip to ensure it's found
-                    bat "${PYTHON_PATH}/python.exe -m pip install -r requirements.txt"
-                }
+                sh '${PYTHON_PATH} -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                script {
-                    // Run your tests (adjust if needed)
-                    bat "${PYTHON_PATH}/python.exe -m pytest"
-                }
+                sh '${PYTHON_PATH} -m pytest'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Packaging the function app...'
+                sh 'zip -r function_package.zip . -x "*.git*"'
             }
         }
 
         stage('Deploy to Azure') {
             steps {
                 echo 'Deploying to Azure...'
-                script {
-                    // Set Azure credentials environment variables
-                    withCredentials([usernamePassword(credentialsId: 'azure-service-principal', usernameVariable: 'AZURE_CLIENT_ID', passwordVariable: 'AZURE_CLIENT_SECRET')]) {
-                        // Login to Azure using Service Principal
-                        bat """az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID"""
-                        
-                        // Set the Azure subscription to use
-                        bat "az account set --subscription $AZURE_SUBSCRIPTION_ID"
-                        
-                        // Deploy your Azure Function
-                        bat 'az functionapp deploy --name myfunctionapp8910481 --resource-group azure_pipeline'
-                    }
+                withCredentials([
+                    usernamePassword(credentialsId: 'azure-service-principal', usernameVariable: 'AZURE_CLIENT_ID', passwordVariable: 'AZURE_CLIENT_SECRET')
+                ]) {
+                    sh '''
+                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                        az account set --subscription $AZURE_SUBSCRIPTION_ID
+                        az functionapp deployment source config-zip \
+                          --name myfunctionapp8910481 \
+                          --resource-group azure_pipeline \
+                          --src function_package.zip
+                    '''
                 }
             }
         }

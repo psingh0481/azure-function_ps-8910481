@@ -75,8 +75,3 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> 23b9ca380adc4a3ce2741ebb470c5783cae8cda9

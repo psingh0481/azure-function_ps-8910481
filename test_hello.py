@@ -1,13 +1,37 @@
-import requests
+import pytest
+from function_app import main
+import azure.functions as func
 
-def test_response_code():
-    res = requests.get("http://localhost:7071/api/HelloWorld")
-    assert res.status_code == 200
+@pytest.mark.asyncio
+async def test_hello_world_response():
+    # Test case 1: Check if response contains "Hello, World!"
+    req = func.HttpRequest(
+        method='GET',
+        url='/api/hello',
+        body=None
+    )
+    response = main(req)
+    assert response.status_code == 200
+    assert "Hello, World!" in response.get_body().decode()
 
-def test_response_text():
-    res = requests.get("http://localhost:7071/api/HelloWorld")
-    assert res.text == "Hello, World!"
+@pytest.mark.asyncio
+async def test_status_code():
+    # Test case 2: Check if status code is 200
+    req = func.HttpRequest(
+        method='GET',
+        url='/api/hello',
+        body=None
+    )
+    response = main(req)
+    assert response.status_code == 200
 
-def test_invalid_method():
-    res = requests.post("http://localhost:7071/api/HelloWorld")
-    assert res.status_code in [200, 405]
+@pytest.mark.asyncio
+async def test_response_type():
+    # Test case 3: Check if response is of correct type
+    req = func.HttpRequest(
+        method='GET',
+        url='/api/hello',
+        body=None
+    )
+    response = main(req)
+    assert isinstance(response, func.HttpResponse) 

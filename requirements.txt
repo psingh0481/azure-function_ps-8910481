@@ -2,5 +2,10 @@
 # The Python Worker is managed by the Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
-pytest
+# Python 3.11.5
+azure-functions==1.23.0b3
+pytest==7.4.3
+pytest-asyncio==0.21.1
+aiohttp==3.9.1
+azure-storage-blob==12.19.0
+azure-identity==1.15.0 

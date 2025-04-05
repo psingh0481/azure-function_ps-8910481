@@ -6,10 +6,43 @@
         "isEnabled": true,
         "excludedTypes": "Request"
       }
+    },
+    "logLevel": {
+      "default": "Information",
+      "Host.Results": "Information",
+      "Function": "Information",
+      "Host.Aggregator": "Information"
     }
   },
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
+  },
+  "extensions": {
+    "http": {
+      "routePrefix": "api",
+      "maxOutstandingRequests": 200,
+      "maxConcurrentRequests": 100,
+      "dynamicThrottlesEnabled": true
+    }
+  },
+  "python": {
+    "workerDirectory": ".",
+    "workerProcessCount": 1
+  },
+  "cors": {
+    "allowedOrigins": [
+      "https://portal.azure.com",
+      "http://localhost:7071",
+      "https://myfunctionapp8910481.azurewebsites.net"
+    ],
+    "supportCredentials": true
+  },
+  "functionTimeout": "00:10:00",
+  "functions": [
+    "hello"
+  ],
+  "managedDependency": {
+    "enabled": true
   }
 }

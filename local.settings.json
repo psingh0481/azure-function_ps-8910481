@@ -2,6 +2,16 @@
   "IsEncrypted": false,
   "Values": {
     "FUNCTIONS_WORKER_RUNTIME": "python",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "6e9e4df5-6ff3-45e9-9f3c-0d8e4d7c8617",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=6e9e4df5-6ff3-45e9-9f3c-0d8e4d7c8617;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/",
+    "WEBSITE_TIME_ZONE": "UTC",
+    "PYTHON_ISOLATION_LEVEL": "ISOLATED",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "WEBSITE_RUN_FROM_PACKAGE": "1",
+    "SCM_DO_BUILD_DURING_DEPLOYMENT": "true",
+    "ENABLE_ORYX_BUILD": "true",
+    "PYTHON_ENABLE_WORKER_EXTENSIONS": "1",
+    "PYTHON_ENABLE_GUNICORN_MULTIWORKERS": "0"
   }
 }

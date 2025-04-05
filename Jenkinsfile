@@ -187,7 +187,31 @@ pipeline {
             echo 'Cleaning up workspace...'
         }
         success {
-            echo 'Pipeline completed successfully!'
+            script {
+                echo '''
+===========================================
+Pipeline completed successfully!
+===========================================
+Function App Details:
+-------------------
+Name: myfunctionapp8910481
+Resource Group: azure_pipeline
+Location: Australia East
+ 
+Function URLs:
+-------------
+Main Function URL: https://myfunctionapp8910481.azurewebsites.net/api/hello
+SCM URL: https://myfunctionapp8910481.scm.azurewebsites.net
+ 
+You can test the function using:
+1. Browser: https://myfunctionapp8910481.azurewebsites.net/api/hello
+2. cURL: curl https://myfunctionapp8910481.azurewebsites.net/api/hello
+3. Postman: GET https://myfunctionapp8910481.azurewebsites.net/api/hello
+ 
+Note: The function may take a few minutes to be fully available after deployment.
+===========================================
+'''
+            }
         }
         failure {
             echo 'Pipeline failed!'
@@ -195,3 +219,4 @@ pipeline {
         }
     }
 }
+ 

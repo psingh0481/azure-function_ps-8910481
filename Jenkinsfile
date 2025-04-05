@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_PATH = "/usr/bin/python3"
+        PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311/python.exe"
         PATH = "${env.PATH}:${PYTHON_PATH}"
         
         AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
@@ -24,7 +24,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh '${PYTHON_PATH} -m pip install -r requirements.txt'
+                sh '"C:/Users/singp/AppData/Local/Programs/Python/Python311/python.exe" -m pip install -r requirements.txt'
             }
         }
 

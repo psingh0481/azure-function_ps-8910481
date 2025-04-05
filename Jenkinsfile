@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/psingh0481/azure-function_ps-8910481.git'
+                git branch: 'main', url: 'https://github.com/psingh0481/azure-function_ps-8910481.git'
             }
         }
         stage('Install Dependencies') {

@@ -1,34 +1,78 @@
 pipeline {
     agent any
+
     environment {
-        AZURE_SUBSCRIPTION_ID = credentials('AZURE_SUBSCRIPTION_ID')
-        AZURE_CLIENT_ID = credentials('AZURE_CLIENT_ID')
-        AZURE_CLIENT_SECRET = credentials('AZURE_CLIENT_SECRET')
-        AZURE_TENANT_ID = credentials('AZURE_TENANT_ID')
-        RESOURCE_GROUP = 'MyResourceGroup'
-        FUNCTION_APP_NAME = 'myfunctionapp8910481'
+        // Set Python and pip path explicitly (adjust based on your Python installation path)
+        PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311"
+        PIP_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311/Scripts"
+        PATH = "${PYTHON_PATH};${PIP_PATH};${env.PATH}"
+        
+        // Azure Service Principal credentials (These should be stored in Jenkins as secrets)
+        AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id') // Replace with your Jenkins secret ID
+        AZURE_CLIENT_ID = credentials('azure-client-id') // Replace with your Jenkins secret ID
+        AZURE_CLIENT_SECRET = credentials('azure-client-secret') // Replace with your Jenkins secret ID
+        AZURE_TENANT_ID = credentials('azure-tenant-id') // Replace with your Jenkins secret ID
     }
+
     stages {
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/psingh0481/azure-function_ps-8910481.git'
+                echo 'Checking out the code from Git'
+                checkout scm
             }
         }
+
         stage('Install Dependencies') {
             steps {
                 echo 'Installing dependencies...'
-                sh 'pip install -r requirements.txt'
+                script {
+                    // Use full path to pip to ensure it's found
+                    bat "${PYTHON_PATH}/python.exe -m pip install -r requirements.txt"
+                }
             }
         }
+
         stage('Run Tests') {
             steps {
-                sh 'pytest test_hello.py'
+                echo 'Running tests...'
+                script {
+                    // Run your tests (adjust if needed)
+                    bat "${PYTHON_PATH}/python.exe -m pytest"
+                }
             }
         }
+
         stage('Deploy to Azure') {
             steps {
-                sh 'func azure functionapp publish myfuntionapp8910481 --python'
+                echo 'Deploying to Azure...'
+                script {
+                    // Set Azure credentials environment variables
+                    withCredentials([usernamePassword(credentialsId: 'azure-service-principal', usernameVariable: 'AZURE_CLIENT_ID', passwordVariable: 'AZURE_CLIENT_SECRET')]) {
+                        // Login to Azure using Service Principal
+                        bat """az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID"""
+                        
+                        // Set the Azure subscription to use
+                        bat "az account set --subscription $AZURE_SUBSCRIPTION_ID"
+                        
+                        // Deploy your Azure Function
+                        bat 'az functionapp deploy --name myfunctionapp8910481 --resource-group azure_pipeline'
+                    }
+                }
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up...'
+        }
+
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }

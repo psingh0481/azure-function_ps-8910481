@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Set Python and pip path explicitly (adjust based on your Python installation path)
         PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311"
-        PIP_PATH = "PIP_PATH = "pip 23.2.1 from C:/Users/singp/AppData/Local/Programs/Python/Python311/Lib/site-packages/pip"
+        PIP_PATH = "pip 23.2.1 from C:/Users/singp/AppData/Local/Programs/Python/Python311/Lib/site-packages/pip"
         PATH = "${PYTHON_PATH};${PIP_PATH};${env.PATH}"
         
         // Azure Service Principal credentials (These should be stored in Jenkins as secrets)

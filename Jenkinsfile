@@ -4,9 +4,8 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311"
-        PIP_PATH = "pip 23.2.1 from C:/Users/singp/AppData/Local/Programs/Python/Python311/Lib/site-packages/pip"
-        PATH = "${PYTHON_PATH};${PIP_PATH};${env.PATH}"
+        PYTHON_PATH = "/usr/bin/python3"
+        PATH = "${env.PATH}:${PYTHON_PATH}"
         
         AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
         AZURE_CLIENT_ID = credentials('azure-client-id')

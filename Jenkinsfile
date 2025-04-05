@@ -4,8 +4,9 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_PATH = "/usr/bin/python3"
-        PATH = "${env.PATH}:${PYTHON_PATH}"
+        PYTHON_PATH = "C:/Users/singp/AppData/Local/Programs/Python/Python311"
+        PIP_PATH = "pip 23.2.1 from C:/Users/singp/AppData/Local/Programs/Python/Python311/Lib/site-packages/pip"
+        PATH = "${PYTHON_PATH};${PIP_PATH};${env.PATH}"
         
         AZURE_SUBSCRIPTION_ID = credentials('azure-subscription-id')
         AZURE_CLIENT_ID = credentials('azure-client-id')
@@ -35,19 +36,9 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo 'Packaging the function app...'
-                sh 'zip -r function_package.zip . -x "*.git*"'
-            }
-        }
-
         stage('Deploy to Azure') {
             steps {
                 echo 'Deploying to Azure...'
-                withCredentials([
-                    usernamePassword(credentialsId: 'azure-service-principal', usernameVariable: 'AZURE_CLIENT_ID', passwordVariable: 'AZURE_CLIENT_SECRET')
-                ]) {
                     sh '''
                         az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
                         az account set --subscription $AZURE_SUBSCRIPTION_ID
@@ -56,7 +47,6 @@ pipeline {
                           --resource-group azure_pipeline \
                           --src function_package.zip
                     '''
-                }
             }
         }
     }

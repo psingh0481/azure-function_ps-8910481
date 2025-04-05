@@ -5,35 +5,29 @@ pipeline {
         AZURE_CLIENT_ID = credentials('AZURE_CLIENT_ID')
         AZURE_CLIENT_SECRET = credentials('AZURE_CLIENT_SECRET')
         AZURE_TENANT_ID = credentials('AZURE_TENANT_ID')
-        RESOURCE_GROUP = 'azure_pipeline'
+        RESOURCE_GROUP = 'MyResourceGroup'
         FUNCTION_APP_NAME = 'myfunctionapp8910481'
     }
     stages {
-        stage('Build') {
+        stage('Clone') {
             steps {
-                sh 'python -m venv .venv'
-                sh 'source .venv/bin/activate && pip install -r requirements.txt'
+                git 'https://github.com/your-repo.git'
             }
         }
-        stage('Test') {
+        stage('Install Dependencies') {
             steps {
-                sh 'source .venv/bin/activate && pytest tests/ -v'
+                echo 'Installing dependencies...'
+                sh 'pip install -r requirements.txt'
             }
         }
-        stage('Deploy') {
+        stage('Run Tests') {
             steps {
-                withCredentials([azureServicePrincipal(
-                    credentialsId: 'azure-credentials',
-                    subscriptionIdVariable: 'AZURE_SUBSCRIPTION_ID',
-                    clientIdVariable: 'AZURE_CLIENT_ID',
-                    clientSecretVariable: 'AZURE_CLIENT_SECRET',
-                    tenantIdVariable: 'AZURE_TENANT_ID'
-                )]) {
-                    sh '''
-                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
-                        func azure functionapp publish $FUNCTION_APP_NAME
-                    '''
-                }
+                sh 'pytest test_hello.py'
+            }
+        }
+        stage('Deploy to Azure') {
+            steps {
+                sh 'func azure functionapp publish myfuntionapp8910481 --python'
             }
         }
     }

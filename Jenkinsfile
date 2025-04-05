@@ -73,7 +73,7 @@ pipeline {
                         mkdir -p deploy
                         
                         # Copy necessary files
-                        cp function_app.py deploy/
+                        cp __init__.py deploy/
                         cp requirements.txt deploy/
                         cp host.json deploy/
                         cp local.settings.json deploy/

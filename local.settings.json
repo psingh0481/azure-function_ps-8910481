@@ -4,7 +4,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "python",
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "APPINSIGHTS_INSTRUMENTATIONKEY": "6e9e4df5-6ff3-45e9-9f3c-0d8e4d7c8617",
-    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=6e9e4df5-6ff3-45e9-9f3c-0d8e4d7c8617;IngestionEndpoint=https://australiacentral-0.in.applicationinsights.azure.com/;LiveEndpoint=https://australiacentral.livediagnostics.monitor.azure.com/",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING": "InstrumentationKey=6e9e4df5-6ff3-45e9-9f3c-0d8e4d7c8617;IngestionEndpoint=https://australiaeast-0.in.applicationinsights.azure.com/;LiveEndpoint=https://australiaeast.livediagnostics.monitor.azure.com/",
     "WEBSITE_TIME_ZONE": "Australia/Sydney",
     "PYTHON_ISOLATION_LEVEL": "ISOLATED",
     "FUNCTIONS_EXTENSION_VERSION": "~4",

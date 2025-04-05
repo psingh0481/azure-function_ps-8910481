@@ -17,7 +17,7 @@ pipeline {
         githubPush()
     
     } // This trigger will start the pipeline when a push is made to the GitHub repository.
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -36,7 +36,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                sh '${PYTHON_PATH} -m pytest'
+                sh '${PYTHON_PATH} -m pytest test_hello.py''
             }
         }
 

@@ -39,7 +39,7 @@ pipeline {
                         $functionApp = az functionapp show --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP 2>$null
                         if ($functionApp) {
                             Write-Host "Deleting existing function app..."
-                            az functionapp delete --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP --yes
+                            az functionapp delete --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP
                             Write-Host "Function app deleted successfully."
                         } else {
                             Write-Host "No existing function app found."
@@ -56,8 +56,7 @@ pipeline {
                             --functions-version 4 `
                             --os-type linux `
                             --consumption-plan-location australiaeast `
-                            --https-only true `
-                            --min-tls-version 1.2
+                            --https-only true
  
                         # Configure Python settings
                         Write-Host "Configuring Python settings..."
@@ -66,7 +65,6 @@ pipeline {
                             --resource-group $env:RESOURCE_GROUP `
                             --settings `
                             PYTHON_ENABLE_WORKER_EXTENSIONS=1 `
-                            FUNCTIONS_WORKER_RUNTIME=python `
                             PYTHON_ISOLATION_LEVEL=ISOLATED
  
                         Write-Host "Function app created and configured successfully."
@@ -197,4 +195,3 @@ pipeline {
         }
     }
 }
- 

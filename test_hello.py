@@ -1,5 +1,5 @@
 import pytest
-from function_app import main
+from __init__ import main
 import azure.functions as func
 
 @pytest.mark.asyncio

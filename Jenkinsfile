@@ -68,23 +68,23 @@ pipeline {
             steps {
                 script {
                     echo 'Creating deployment package...'
-                    sh '''
+                    powershell '''
                         # Create deployment directory
-                        mkdir -p deploy
+                        New-Item -ItemType Directory -Force -Path deploy
                         
                         # Copy necessary files
-                        cp __init__.py deploy/
-                        cp requirements.txt deploy/
-                        cp host.json deploy/
-                        cp local.settings.json deploy/
+                        Copy-Item __init__.py deploy/
+                        Copy-Item requirements.txt deploy/
+                        Copy-Item host.json deploy/
+                        Copy-Item local.settings.json deploy/
                         
-                        # Create deployment package
-                        cd deploy
-                        zip -r ../function_package.zip .
-                        cd ..
+                        # Create deployment package using Compress-Archive
+                        Set-Location deploy
+                        Compress-Archive -Path * -DestinationPath ../function_package.zip -Force
+                        Set-Location ..
                         
                         # Clean up
-                        rm -rf deploy
+                        Remove-Item -Path deploy -Recurse -Force
                     '''
                 }
             }
@@ -94,19 +94,19 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Azure...'
-                    sh '''
+                    powershell '''
                         # Login to Azure
-                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-                        az account set --subscription $AZURE_SUBSCRIPTION_ID
+                        az login --service-principal -u $env:AZURE_CLIENT_ID -p $env:AZURE_CLIENT_SECRET --tenant $env:AZURE_TENANT_ID
+                        az account set --subscription $env:AZURE_SUBSCRIPTION_ID
                         
                         # Deploy function app
-                        az functionapp deployment source config-zip \
-                            --name $FUNCTION_APP_NAME \
-                            --resource-group $RESOURCE_GROUP \
+                        az functionapp deployment source config-zip `
+                            --name $env:FUNCTION_APP_NAME `
+                            --resource-group $env:RESOURCE_GROUP `
                             --src function_package.zip
                             
                         # Verify deployment
-                        az functionapp show --name $FUNCTION_APP_NAME --resource-group $RESOURCE_GROUP
+                        az functionapp show --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP
                     '''
                 }
             }

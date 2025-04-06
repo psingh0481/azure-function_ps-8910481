@@ -17,7 +17,7 @@ pipeline {
         
         // Azure resource configuration
         RESOURCE_GROUP = 'azure_pipeline'
-        FUNCTION_APP_NAME = 'myfunctionapp8910481'
+        FUNCTION_APP_NAME = 'pythonfunctionPS0481'
     }
  
     triggers {
@@ -25,54 +25,6 @@ pipeline {
     }
  
     stages {
-        stage('Cleanup') {
-            steps {
-                script {
-                    echo 'Cleaning up existing resources...'
-                    powershell '''
-                        # Login to Azure
-                        az login --service-principal -u $env:AZURE_CLIENT_ID -p $env:AZURE_CLIENT_SECRET --tenant $env:AZURE_TENANT_ID
-                        az account set --subscription $env:AZURE_SUBSCRIPTION_ID
-                        
-                        # Delete existing function app if it exists
-                        Write-Host "Checking if function app exists..."
-                        $functionApp = az functionapp show --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP 2>$null
-                        if ($functionApp) {
-                            Write-Host "Deleting existing function app..."
-                            az functionapp delete --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP
-                            Write-Host "Function app deleted successfully."
-                        } else {
-                            Write-Host "No existing function app found."
-                        }
- 
-                        # Create new function app
-                        Write-Host "Creating new function app..."
-                        az functionapp create `
-                            --name $env:FUNCTION_APP_NAME `
-                            --resource-group $env:RESOURCE_GROUP `
-                            --storage-account mystorage8910481 `
-                            --runtime python `
-                            --runtime-version 3.11 `
-                            --functions-version 4 `
-                            --os-type linux `
-                            --consumption-plan-location australiaeast `
-                            --https-only true
- 
-                        # Configure Python settings
-                        Write-Host "Configuring Python settings..."
-                        az functionapp config appsettings set `
-                            --name $env:FUNCTION_APP_NAME `
-                            --resource-group $env:RESOURCE_GROUP `
-                            --settings `
-                            PYTHON_ENABLE_WORKER_EXTENSIONS=1 `
-                            PYTHON_ISOLATION_LEVEL=ISOLATED
- 
-                        Write-Host "Function app created and configured successfully."
-                    '''
-                }
-            }
-        }
- 
         stage('Checkout') {
             steps {
                 echo 'Checking out the code from Git'
@@ -120,10 +72,8 @@ pipeline {
                         # Create deployment directory
                         New-Item -ItemType Directory -Force -Path deploy
                         
-                        # Copy the hello directory with all its contents
-                        Copy-Item -Path hello -Destination deploy/ -Recurse
-                        
-                        # Copy other necessary files
+                        # Copy necessary files
+                        Copy-Item __init__.py deploy/
                         Copy-Item requirements.txt deploy/
                         Copy-Item host.json deploy/
                         Copy-Item local.settings.json deploy/
@@ -133,14 +83,8 @@ pipeline {
                         Compress-Archive -Path * -DestinationPath ../function_package.zip -Force
                         Set-Location ..
                         
-                        # Verify package contents
-                        Write-Host "Verifying package contents..."
-                        Expand-Archive -Path function_package.zip -DestinationPath verify_package -Force
-                        Get-ChildItem -Path verify_package -Recurse | ForEach-Object { Write-Host $_.FullName }
-                        
                         # Clean up
                         Remove-Item -Path deploy -Recurse -Force
-                        Remove-Item -Path verify_package -Recurse -Force
                     '''
                 }
             }
@@ -162,19 +106,7 @@ pipeline {
                             --src function_package.zip
                             
                         # Verify deployment
-                        Write-Host "Waiting for function app to be ready..."
-                        Start-Sleep -Seconds 30
-                        
-                        # List functions
-                        Write-Host "Listing functions..."
-                        az functionapp function list `
-                            --name $env:FUNCTION_APP_NAME `
-                            --resource-group $env:RESOURCE_GROUP
-                            
-                        # Show function app details
-                        az functionapp show `
-                            --name $env:FUNCTION_APP_NAME `
-                            --resource-group $env:RESOURCE_GROUP
+                        az functionapp show --name $env:FUNCTION_APP_NAME --resource-group $env:RESOURCE_GROUP
                     '''
                 }
             }
@@ -187,31 +119,7 @@ pipeline {
             echo 'Cleaning up workspace...'
         }
         success {
-            script {
-                echo '''
-===========================================
-Pipeline completed successfully!
-===========================================
-Function App Details:
--------------------
-Name: myfunctionapp8910481
-Resource Group: azure_pipeline
-Location: Australia East
- 
-Function URLs:
--------------
-Main Function URL: https://myfunctionapp8910481.azurewebsites.net/api/hello
-SCM URL: https://myfunctionapp8910481.scm.azurewebsites.net
- 
-You can test the function using:
-1. Browser: https://myfunctionapp8910481.azurewebsites.net/api/hello
-2. cURL: curl https://myfunctionapp8910481.azurewebsites.net/api/hello
-3. Postman: GET https://myfunctionapp8910481.azurewebsites.net/api/hello
- 
-Note: The function may take a few minutes to be fully available after deployment.
-===========================================
-'''
-            }
+            echo 'Pipeline completed successfully!'
         }
         failure {
             echo 'Pipeline failed!'
@@ -219,4 +127,3 @@ Note: The function may take a few minutes to be fully available after deployment
         }
     }
 }
- 

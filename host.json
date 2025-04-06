@@ -34,7 +34,7 @@
     "allowedOrigins": [
       "https://portal.azure.com",
       "http://localhost:7071",
-      "https://myfunctionapp8910481.azurewebsites.net"
+      "https://pythonfunctionPS0481.azurewebsites.net"
     ],
     "supportCredentials": true
   },
